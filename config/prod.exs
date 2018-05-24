@@ -14,7 +14,7 @@ config :your_app, YourAppWeb.Endpoint,
   # url is used to generate links
   url: [scheme: "http", host: "${HOST}", port: 80]
 
-# Configure your database
+# Configure your database if needed
 config :your_app, YourApp.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool_size: "${POOL_SIZE}",
@@ -22,6 +22,6 @@ config :your_app, YourApp.Repo,
   username: "${DB_USER}",
   password: "${DB_PASS}",
   hostname: "${DB_HOST}",
-  port: "5432"
+  port: "${DB_PORT}"
 
 # ...snip...

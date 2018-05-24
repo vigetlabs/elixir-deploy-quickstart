@@ -105,19 +105,22 @@ Please don't use `shh` as your password :\
 
 ```bash
 # ~/.bashrc
+export LANG=en_US.UTF-8
+export MIX_ENV=prod
+export REPLACE_OS_VARS=true
+# If you're using Phoenix, you'll need this:
+export HOST=localhost
+export SECRET_KEY_BASE=1234
+export PORT=4000
+# if you're using Ecto, you'll need these:
 export DB_HOST=localhost
 export DB_NAME=your_app
 export DB_PASS=shh
+export DB_PORT=5432
 export DB_USER=deploy
-export HOST=localhost
-export LANG=en_US.UTF-8
-export MIX_ENV=prod
-# Leaves you with 5 extra connections for other things
-# Postgres defaults to having 100 connections available
 export POOL_SIZE=95
-export PORT=4000
-export REPLACE_OS_VARS=true
-export SECRET_KEY_BASE=1234
+# 95 leaves you with 5 extra connections for other processes
+# Postgres defaults to having 100 connections available
 ```
 
 Make sure you use a real `SECRET_KEY_BASE` output from `mix

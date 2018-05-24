@@ -30,15 +30,14 @@ docker-compose -f builder.yml up --build
 # Upload the release
 read -rp 'Version: ' VERSION
 echo "Uploading release"
-scp _build/prod/rel/$APP/releases/$VERSION/$APP.tar.gz \
-  $SSH_USER@$PROD:~/$APP
+scp _build/prod/rel/"$APP"/releases/"$VERSION"/"$APP".tar.gz "$SSH_USER"@"$PROD":~/"$APP"
 
 # Backup, unpack, restart the app, and migrate if necessary
 echo "Backing up and restarting the app on production"
-ssh $SSH_USER@$PROD /bin/bash << EOF
-  cd $APP
-  pg_dump $APP > ./postgres_backups/$(date +%s).dump
-  tar -xzf $APP.tar.gz
-  sudo systemctl restart $APP
-  REPLACE_OS_VARS=true ./bin/$APP migrate
+ssh "$SSH_USER"@"$PROD" /bin/bash << EOF
+  cd "$APP"
+  pg_dump "$APP" > ./postgres_backups/$(date +%s).dump
+  tar -xzf "$APP".tar.gz
+  sudo systemctl restart "$APP"
+  REPLACE_OS_VARS=true ./bin/"$APP" migrate
 EOF
