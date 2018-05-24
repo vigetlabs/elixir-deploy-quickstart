@@ -37,21 +37,21 @@ vary if you use a different OS or SaaS.
 
 ## Create user
 
-```shell
+```console
 ## ssh root@your_server
 ## At this point, everything is on the server, not your local machine
-#> adduser deploy sudo
-#> usermod -aG sudo deploy
-#> find .ssh -print | cpio -pdmv --owner=deploy ~deploy
-#> sudo su - deploy
-$> mkdir -p your_app/postgres_backups
+# adduser deploy sudo
+# usermod -aG sudo deploy
+# find .ssh -print | cpio -pdmv --owner=deploy ~deploy
+# sudo su - deploy
+$ mkdir -p your_app/postgres_backups
 ```
 
 ## HTTP server
 
 [Sample nginx config](./nginx-config)
 
-```shell
+```console
 $ sudo apt-get install nginx
 $ sudo vim /etc/nginx/sites-available/your_app
 $ # paste nginx config stuff
@@ -75,7 +75,7 @@ update the server config in `config/prod.exs`
 [Distillery guide](https://hexdocs.pm/distillery/use-with-systemd.html)
 [Sample systemd unit](./systemd.service)
 
-```shell
+```console
 $ sudo vim /etc/systemd/service/yourapp.service
 $ # paste some stuff
 $ sudo systemctl enable your_app
@@ -83,7 +83,7 @@ $ sudo systemctl enable your_app
 
 ## Postgres
 
-```shell
+```console
 $ sudo apt-get install postgresql postgresql-contrib
 $ sudo su - postgres
 $ createdb your_app
@@ -127,7 +127,7 @@ phx.gen.secret`.
 This will ensure that `bin/release.sh` can restart your app without
 being prompted for a password.
 
-```shell
+```console
 $ sudo visudo
 ```
 
