@@ -6,12 +6,12 @@ After=network.target
 Type=simple
 User=deploy
 Group=deploy
-WorkingDirectory=/app
-ExecStart=/app/bin/your_app foreground
-ExecStop=/app/bin/your_app stop
+WorkingDirectory=/home/deploy/your_app
+ExecStart=/home/deploy/your_app/bin/your_app foreground
+ExecStop=/home/deploy/your_app/bin/your_app stop
 Restart=on-failure
 RestartSec=5
-EnvironmentFile=/app/env.prod
+EnvironmentFile=/home/deploy/your_app/config/env.prod
 SyslogIdentifier=yourapp
 RemainAfterExit=no
 
