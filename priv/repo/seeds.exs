@@ -53,8 +53,6 @@ defmodule Tasks.Seeds do
         #add_grades_to_assignment(assignment, [student])
       #end)
     #end)
-
-    #UsefulOutput.print()
   end
 
   #defp course_with_content(teacher, semester, number_of_students) do
