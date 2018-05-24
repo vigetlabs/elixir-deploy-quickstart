@@ -73,6 +73,7 @@ update the server config in `config/prod.exs`
 ## Systemd Service
 
 [Distillery guide](https://hexdocs.pm/distillery/use-with-systemd.html)
+
 [Sample systemd unit](./systemd.service)
 
 ```console
