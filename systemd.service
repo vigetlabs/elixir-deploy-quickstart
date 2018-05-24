@@ -1,0 +1,19 @@
+[Unit]
+Description=YourApp
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/app
+ExecStart=/app/bin/your_app foreground
+ExecStop=/app/bin/your_app stop
+Restart=on-failure
+RestartSec=5
+EnvironmentFile=/app/env.prod
+SyslogIdentifier=yourapp
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+# .dockerignore
+assets/node_modules
+priv/static
+_build
