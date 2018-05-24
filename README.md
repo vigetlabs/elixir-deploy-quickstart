@@ -22,7 +22,9 @@ Distillery's guide into scripts.
       of 20180524. These samples were pulled from
       [master](https://github.com/bitwalker/distillery/blob/fa6777fdc0c61aa8fcad54ffaabbb6829dd4fb38/docs/guides/running_migrations.md).
   - [lib/your_app/release_tasks.ex](./lib/your_app/release_tasks.ex).
-  - [rel/commands/migrate.sh](./rel/commands/migrate.sh)
+  - [rel/commands/migrate.sh](./rel/commands/migrate.sh) There is a
+      difference here where the `env.prod` file is sourced to get the
+      secrets in the environment before running the command.
   - [rel/config.exs](./rel/config.exs)
 - [priv/repo/seeds.exs](./priv/repo/seeds.exs) Sample seed file. All of
     it is commented out, but you can get an idea of what real seeds look
@@ -45,6 +47,7 @@ vary if you use a different OS or SaaS.
 # find .ssh -print | cpio -pdmv --owner=deploy ~deploy
 # sudo su - deploy
 $ mkdir -p your_app/postgres_backups
+$ mkdir -p your_app/config
 ```
 
 ## HTTP server
@@ -62,8 +65,8 @@ $ sudo nginx -c /etc/nginx/nginx.conf -t
 $ sudo systemctl restart nginx
 ```
 
-The sample nginx config is not fit for real production usage. This will
-get you started, but you should definitely setup SSL and HTTPS.
+The sample nginx config is not fit for production usage. This will get
+you started, but you should definitely setup SSL and HTTPS.
 
 Follow [Digital Ocean's guide] for enabling SSL, and make sure You
 update the server config in `config/prod.exs`
@@ -104,21 +107,24 @@ Please don't use `shh` as your password :\
 ## Copy secrets over
 
 ```bash
-# ~/.bashrc
-export LANG=en_US.UTF-8
-export MIX_ENV=prod
-export REPLACE_OS_VARS=true
-# If you're using Phoenix, you'll need this:
-export HOST=localhost
-export SECRET_KEY_BASE=1234
-export PORT=4000
+# ~/your_app/config/env.prod
+LANG=en_US.UTF-8
+MIX_ENV=prod
+REPLACE_OS_VARS=true
+RELEASE_NAME=your_app_production
+
+# If you're using Phoenix, you'll need these:
+HOST=localhost
+SECRET_KEY_BASE=1234
+PORT=4000
+
 # if you're using Ecto, you'll need these:
-export DB_HOST=localhost
-export DB_NAME=your_app
-export DB_PASS=shh
-export DB_PORT=5432
-export DB_USER=deploy
-export POOL_SIZE=95
+DB_HOST=localhost
+DB_NAME=your_app
+DB_PASS=shh
+DB_PORT=5432
+DB_USER=deploy
+POOL_SIZE=95
 # 95 leaves you with 5 extra connections for other processes
 # Postgres defaults to having 100 connections available
 ```
@@ -172,3 +178,75 @@ How to release:
 1. run [bin/release.sh](./bin/release.sh). When prompted, enter the
    release version that distillery built. It should be mentioned in the
    stdout above the prompt.
+
+
+
+# FAQ
+
+### I have two instances of the app running on the same server. Will this
+work?
+
+The `RELEASE_NAME` environment variable will be the nodename of that
+release, and it's required for that name to be unique. When you have
+both instances on the server, edit the `env.prod` file for a given
+instance and make sure it's unique.
+
+### I don't want to source the environment file before every command
+
+is there a way to automatically do that? I keep forgetting to use
+`REPLACE_OS_VARS=true` and add my database credentials?
+
+Yes! I feelz ya. One way is to add a Distillery plugin that creates a
+custom `boot_check` script. In this script, copy the [default boot_check
+template] into `rel/templates/boot_check.eex`, but add something like
+this before it loads the app:
+
+```bash
+# /rel/templates/boot_check.eex
+
+... snip ...
+. "${SCRIPT_DIR}/../config/env.prod"
+export REPLACE_OS_VARS=true
+
+... snip ...
+```
+
+Then create the Distillery plugin that uses this custom boot check template:
+
+```elixir
+defmodule YourApp.Release.CustomBootCheck do
+  use Mix.Releases.Plugin
+
+  def before_assembly(_release, _opts), do: nil
+
+  def after_assembly(_release, _opts), do: nil
+
+  def before_package(%Release{} = release, template: template) do
+    info "Generating custom executable.."
+
+    executable =
+      EEx.eval_file(template, [release_name: release.name,
+                               exec_options: release.profile.exec_opts])
+
+    bin_path = Path.join(release.profile.output_dir, "bin")
+
+    File.write!(Path.join(bin_path, Atom.to_string(release.name)), executable)
+
+    release
+  end
+
+  def after_package(_release, _opts), do: nil
+
+  def after_cleanup(_args, _opts), do: nil
+end
+```
+
+Finally, tell Distillery to use the plugin:
+
+```elixir
+# rel/config.exs
+
+plugin YourApp.Release.CustomBootCheck, template: "rel/templates/boot_check.eex"
+```
+
+[boot_check]: https://github.com/bitwalker/distillery/blob/master/priv/templates/boot_check.eex
