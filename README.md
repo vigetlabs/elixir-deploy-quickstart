@@ -38,8 +38,8 @@ vary if you use a different OS or SaaS.
 ## Create user
 
 ```console
-## ssh root@your_server
-## At this point, everything is on the server, not your local machine
+# # ssh root@your_server
+# # At this point, everything is on the server, not your local machine
 # adduser deploy sudo
 # usermod -aG sudo deploy
 # find .ssh -print | cpio -pdmv --owner=deploy ~deploy
