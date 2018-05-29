@@ -19,4 +19,9 @@ environment :prod do
   ]
 end
 
+release :your_app do
+  set version: current_version(:your_app)
+  set name: "your_app_${RELEASE_NAME}"
+end
+
 # ..snip..
