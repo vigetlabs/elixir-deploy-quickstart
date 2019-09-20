@@ -2,11 +2,11 @@
 
 ## Distillery
 
-[Add Distillery to your project](https://hexdocs.pm/distillery/getting-started.html)
+[Add Distillery to your project](https://hexdocs.pm/distillery/introduction/installation.html)
 
-[Understand how to configure](https://hexdocs.pm/distillery/runtime-configuration.html)
+[Understand how to configure](https://hexdocs.pm/distillery/runtime-configuration.htmlhttps://hexdocs.pm/distillery/config/runtime.html)
 
-[If you're using Phoenix, read the guide](https://hexdocs.pm/distillery/use-with-phoenix.html)
+[If you're using Phoenix, read the guide](https://hexdocs.pm/distillery/guides/phoenix_walkthrough.html)
 Ignore the part about {:system, "PORT"} if you're using Phoenix >=1.3.
 Instead, look at this [prod.exs](config/prod.exs) snippet.
 
